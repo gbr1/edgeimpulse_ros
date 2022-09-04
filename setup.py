@@ -4,7 +4,7 @@ package_name = 'edgeimpulse_ros'
 submodules = 'edgeimpulse_ros/submodules'
 setup(
     name=package_name,
-    version='0.0.1',
+    version='0.0.2',
     packages=[package_name, submodules],
     data_files=[
         ('share/ament_index/resource_index/packages',
