@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+from distutils.log import info
 from unittest import result
 from .submodules import device_patches
 import cv2
@@ -27,7 +28,7 @@ from sensor_msgs.msg import Image
 from vision_msgs.msg import Detection2DArray
 from vision_msgs.msg import Detection2D
 from vision_msgs.msg import ObjectHypothesisWithPose
-#from vision_msgs.msg import VisionInfo
+from vision_msgs.msg import VisionInfo
 
 import os
 import time
@@ -44,16 +45,23 @@ class EI_Image_node(Node):
 
         self.occupied = False
         self.img = None
+        self.info_msg = VisionInfo()
         self.cv_bridge = CvBridge()
 
         super().__init__('ei_image_classifier_node')
         self.init_parameters()
         self.ei_classifier = self.EI_Classifier(self.modelfile, self.get_logger())
 
+        self.info_msg.header.frame_id = self.frame_id
+        self.info_msg.method = self.ei_classifier.model_info['model_parameters']['model_type']
+        self.info_msg.database_location = self.ei_classifier.model_info['project']['name']+' / '+self.ei_classifier.model_info['project']['owner']
+        self.info_msg.database_version = self.ei_classifier.model_info['project']['deploy_version']
+
         self.timer_parameter = self.create_timer(2,self.parameters_callback)
 
         self.image_publisher = self.create_publisher(Image,'/detection/output/image',1)
         self.results_publisher = self.create_publisher(Detection2DArray,'/detection/output/results',1)
+        self.info_publisher = self.create_publisher(VisionInfo, '/detection/output/info',1)
 
         self.timer_classify = self.create_timer(0.01,self.classify_callback)
         self.timer_classify.cancel()
@@ -137,7 +145,7 @@ class EI_Image_node(Node):
 
                 # object with hypthothesis
                 obj_hyp = ObjectHypothesisWithPose()
-                #obj_hyp.id = 
+                obj_hyp.id = bb['label'] #str(self.ei_classifier.labels.index(bb['label']))
                 obj_hyp.score = bb['value']
                 obj_hyp.pose.pose.position.x = float(bb['x'])
                 obj_hyp.pose.pose.position.y = float(bb['y'])
@@ -166,6 +174,8 @@ class EI_Image_node(Node):
         # publish message
         self.image_publisher.publish(self.cv_bridge.cv2_to_imgmsg(cropped,"bgr8"))
         self.results_publisher.publish(results_msg)
+        self.info_msg.header.stamp = time_now
+        self.info_publisher.publish(self.info_msg)
 
         self.occupied= False
         self.timer_classify.cancel()
