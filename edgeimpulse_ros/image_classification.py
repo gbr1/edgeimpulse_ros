@@ -101,7 +101,9 @@ class EI_Image_node(Node):
     def listener_callback(self, msg):
         if len(msg.data):
             current_frame = self.cv_bridge.imgmsg_to_cv2(msg)
-            current_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
+            img_encoding = msg.encoding
+            if img_encoding=="bgr8":
+                current_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2RGB)
             if not self.occupied:
                 self.img = current_frame
                 self.timer_classify.reset()
