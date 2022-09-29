@@ -2,6 +2,8 @@
 
 ROS2 wrapper for Edge Impulse on Linux.
 
+![ezgif-4-3cda6ac695](https://user-images.githubusercontent.com/9216366/193153736-fccd9451-2277-42f2-8141-6027a10f0245.gif)
+
 
 ## 1. Topics
 
@@ -15,6 +17,7 @@ ROS2 wrapper for Edge Impulse on Linux.
 - `frame_id` (**string**), _"base_link"_, frame id of output topics
 - `model.filepath` (**string**), _""_, absolute filepath to .eim file
 - `show.overlay` (**bool**), _true_, show bounding boxes on output image
+- `show.center` (**bool**), _false_, show centroids on output image
 - `show.labels` (**bool**), _true_, show labels on bounding boxes,
 - `show.classification_info` (**bool**), _true_, show the attendibility (0-1) of the prediction
 
