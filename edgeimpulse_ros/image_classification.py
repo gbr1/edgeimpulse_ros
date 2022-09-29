@@ -81,6 +81,10 @@ class EI_Image_node(Node):
         self.declare_parameter('show.overlay', True)
         self.show_overlay = self.get_parameter('show.overlay').get_parameter_value().bool_value
 
+        self.declare_parameter('show.center', False)
+        self.show_center = self.get_parameter('show.center').get_parameter_value().bool_value
+
+
         self.declare_parameter('show.labels',True)
         self.show_labels_on_image = self.get_parameter('show.labels').get_parameter_value().bool_value
 
@@ -94,6 +98,7 @@ class EI_Image_node(Node):
         self.show_labels_on_image = self.get_parameter('show.labels').get_parameter_value().bool_value
         self.show_extra_classification_info = self.get_parameter('show.classification_info').get_parameter_value().bool_value
         self.show_overlay = self.get_parameter('show.overlay').get_parameter_value().bool_value
+        self.show_center= self.get_parameter('show.center').get_parameter_value().bool_value
 
 
 
@@ -172,12 +177,14 @@ class EI_Image_node(Node):
                     self.get_logger().info('%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
                 if self.show_overlay:
                     img_res = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
-                    img_res = cv2.circle(img_res, center, 3, (255, 0, 0), 1)
-                    composed_center = '('+str(centerX)+','+str(centerY)+')'
-                    img_res = cv2.putText(img_res, composed_center, (centerX, centerY-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
                     if self.show_labels_on_image:
                         composed_label = bb['label']+' '+str(round(bb['value'],2))
                         img_res = cv2.putText(img_res, composed_label, (bb['x'], bb['y']-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
+                    if self.show_center:
+                        img_res = cv2.circle(img_res, center, 3, (255, 0, 0), 1)
+                        composed_center = '('+str(centerX)+','+str(centerY)+')'
+                        img_res = cv2.putText(img_res, composed_center, (centerX, centerY-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
+
 
         cropped=cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR)
 
