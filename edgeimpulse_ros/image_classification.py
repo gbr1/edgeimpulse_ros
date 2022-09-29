@@ -141,6 +141,11 @@ class EI_Image_node(Node):
                 self.get_logger().info('Found %d bounding boxes (%d ms.)' % (len(res["result"]["bounding_boxes"]), res['timing']['dsp'] + res['timing']['classification']))
                     
             for bb in res["result"]["bounding_boxes"]:
+
+                centerX=bb['x']+int(bb['width']/2)
+                centerY=bb['y']+int(bb['height']/2)
+                center=(centerX, centerY)
+
                 result_msg = Detection2D()
                 result_msg.header.stamp = time_now
                 result_msg.header.frame_id = self.frame_id
@@ -149,13 +154,13 @@ class EI_Image_node(Node):
                 obj_hyp = ObjectHypothesisWithPose()
                 obj_hyp.id = bb['label'] #str(self.ei_classifier.labels.index(bb['label']))
                 obj_hyp.score = bb['value']
-                obj_hyp.pose.pose.position.x = float(bb['x'])
-                obj_hyp.pose.pose.position.y = float(bb['y'])
+                obj_hyp.pose.pose.position.x = float(centerX)
+                obj_hyp.pose.pose.position.y = float(centerY)
                 result_msg.results.append(obj_hyp)
 
                 # bounding box
-                result_msg.bbox.center.x = float(bb['x'])
-                result_msg.bbox.center.y = float(bb['y'])
+                result_msg.bbox.center.x = float(centerX)
+                result_msg.bbox.center.y = float(centerY)
                 result_msg.bbox.size_x = float(bb['width'])
                 result_msg.bbox.size_y = float(bb['height'])
 
@@ -167,6 +172,9 @@ class EI_Image_node(Node):
                     self.get_logger().info('%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
                 if self.show_overlay:
                     img_res = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+                    img_res = cv2.circle(img_res, center, 3, (255, 0, 0), 1)
+                    composed_center = '('+str(centerX)+','+str(centerY)+')'
+                    img_res = cv2.putText(img_res, composed_center, (centerX, centerY-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
                     if self.show_labels_on_image:
                         composed_label = bb['label']+' '+str(round(bb['value'],2))
                         img_res = cv2.putText(img_res, composed_label, (bb['x'], bb['y']-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
