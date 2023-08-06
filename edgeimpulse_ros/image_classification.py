@@ -56,7 +56,6 @@ class EI_Image_node(Node):
         self.info_msg.method = self.ei_classifier.model_info['model_parameters']['model_type']
         self.info_msg.database_location = self.ei_classifier.model_info['project']['name']+' / '+self.ei_classifier.model_info['project']['owner']
         self.info_msg.database_version = self.ei_classifier.model_info['project']['deploy_version']
-
         self.timer_parameter = self.create_timer(2,self.parameters_callback)
 
         self.image_publisher = self.create_publisher(Image,'/detection/output/image',1)
@@ -178,14 +177,19 @@ class EI_Image_node(Node):
                 if self.show_extra_classification_info:
                     self.get_logger().info('%s (%.2f): x=%d y=%d w=%d h=%d' % (bb['label'], bb['value'], bb['x'], bb['y'], bb['width'], bb['height']))
                 if self.show_overlay:
-                    img_res = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), (255, 0, 0), 1)
+
+                    print(self.ei_classifier.labels.index(bb['label']))
+                    
+                    box_color = (0,255,0)
+
+                    img_res = cv2.rectangle(cropped, (bb['x'], bb['y']), (bb['x'] + bb['width'], bb['y'] + bb['height']), box_color, 1)
                     if self.show_labels_on_image:
-                        composed_label = bb['label']+' '+str(round(bb['value'],2))
-                        img_res = cv2.putText(img_res, composed_label, (bb['x'], bb['y']-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
+                        composed_label = bb['label'] +' '+str(round(bb['value'],2))
+                        img_res = cv2.putText(img_res, composed_label, (bb['x'], bb['y']-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, box_color,1)
                     if self.show_center:
-                        img_res = cv2.circle(img_res, center, 3, (255, 0, 0), 1)
+                        img_res = cv2.circle(img_res, center, 3, box_color, 1)
                         composed_center = '('+str(centerX)+','+str(centerY)+')'
-                        img_res = cv2.putText(img_res, composed_center, (centerX, centerY-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,0,0),1)
+                        img_res = cv2.putText(img_res, composed_center, (centerX, centerY-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, box_color,1)
 
 
         cropped=cv2.cvtColor(cropped, cv2.COLOR_RGB2BGR)
