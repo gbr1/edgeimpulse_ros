@@ -1,6 +1,6 @@
 # edgeimpulse_ros
 
-ROS2 wrapper for Edge Impulse on Linux.
+ROS2 Humble wrapper for Edge Impulse on Linux.
 
 ![ezgif-4-3cda6ac695](https://user-images.githubusercontent.com/9216366/193153736-fccd9451-2277-42f2-8141-6027a10f0245.gif)
 
@@ -62,7 +62,6 @@ Here you find some prebuilt models: [https://github.com/gbr1/edgeimpulse_example
 
 ## 6. Known issues
 
-- this wrapper works on foxy, galactic and humble are coming soon (incompatibility on vision msgs by ros-perception)
 - if you use a classification model, topic results is empty
 - you cannot change color of bounding boxes (coming soon)
 - other types (imu and sound based ml) are unavailable

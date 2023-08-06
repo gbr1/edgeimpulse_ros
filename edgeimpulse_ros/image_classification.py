@@ -157,17 +157,19 @@ class EI_Image_node(Node):
 
                 # object with hypthothesis
                 obj_hyp = ObjectHypothesisWithPose()
-                obj_hyp.id = bb['label'] #str(self.ei_classifier.labels.index(bb['label']))
-                obj_hyp.score = bb['value']
+                obj_hyp.hypothesis.class_id = bb['label'] #str(self.ei_classifier.labels.index(bb['label']))
+                obj_hyp.hypothesis.score = bb['value']
                 obj_hyp.pose.pose.position.x = float(centerX)
                 obj_hyp.pose.pose.position.y = float(centerY)
                 result_msg.results.append(obj_hyp)
 
                 # bounding box
-                result_msg.bbox.center.x = float(centerX)
-                result_msg.bbox.center.y = float(centerY)
+                result_msg.bbox.center.position.x = float(centerX)
+                result_msg.bbox.center.position.y = float(centerY)
+                result_msg.bbox.center.theta = 0.0
                 result_msg.bbox.size_x = float(bb['width'])
                 result_msg.bbox.size_y = float(bb['height'])
+                result_msg.id = bb['label']
 
 
                 results_msg.detections.append(result_msg)
